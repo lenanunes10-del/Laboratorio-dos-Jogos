@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo do Galo | Laboratório de Jogos</title>
     <style>
-        /* Base Styles */
+        /* Base Layout */
         html, body { height: 100%; margin: 0; padding: 0; }
         body { 
             display: flex; 
@@ -30,7 +30,7 @@
 
         .main-content { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
 
-        /* Control Panel - The Bar with Buttons */
+        /* Control Panel */
         .control-panel {
             display: flex;
             align-items: center;
@@ -40,15 +40,18 @@
             flex-wrap: wrap;
         }
 
-        .mode-selection { 
+        /* Container for both the mode switch and the restart button */
+        .button-group { 
             background: #f5f5f7; 
             padding: 6px; 
             border-radius: 30px; 
             display: inline-flex; 
             gap: 5px;
+            border: 1px solid #e5e5e5;
         }
 
-        .mode-btn { 
+        /* Shared Button Style (White/Transparent by default) */
+        .mode-btn, .reset-btn { 
             padding: 10px 22px; 
             cursor: pointer; 
             border: none; 
@@ -58,27 +61,15 @@
             font-weight: 600;
             font-size: 0.85rem;
             transition: all 0.2s ease;
+            outline: none;
         }
 
-        /* FORCED BLUE STYLE */
-        .mode-btn.active { 
+        /* THE BLUE STATE - Applies to active modes AND when clicking Restart */
+        .active-blue { 
             background-color: #0071e3 !important; 
             color: #ffffff !important; 
             box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3); 
         }
-
-        .reset-btn { 
-            padding: 14px 28px; 
-            background: #1d1d1f; 
-            color: white; 
-            border: none; 
-            border-radius: 30px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-        .reset-btn:hover { background: #0066cc; transform: translateY(-2px); }
 
         /* The Board */
         .board { display: grid; grid-template-columns: repeat(3, 110px); grid-gap: 15px; margin-bottom: 30px; }
@@ -108,11 +99,14 @@
 
     <div class="main-content">
         <div class="control-panel">
-            <div class="mode-selection">
-                <button id="p-vs-p" class="mode-btn active" onclick="setMode('pvp')" data-pt="2 Jogadores" data-en="2 Players">2 Jogadores</button>
+            <div class="button-group">
+                <button id="p-vs-p" class="mode-btn active-blue" onclick="setMode('pvp')" data-pt="2 Jogadores" data-en="2 Players">2 Jogadores</button>
                 <button id="p-vs-c" class="mode-btn" onclick="setMode('pvc')" data-pt="Computador" data-en="Computer">Computador</button>
             </div>
-            <button onclick="resetBoard()" class="reset-btn" data-pt="Reiniciar" data-en="Restart Game">Reiniciar</button>
+            
+            <div class="button-group">
+                <button id="reset-btn" class="reset-btn" onclick="handleReset(this)" data-pt="Reiniciar" data-en="Restart">Reiniciar</button>
+            </div>
         </div>
 
         <div id="status"></div>
@@ -140,22 +134,27 @@
         const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
         function setMode(m) { 
-            console.log("Switching mode to: " + m);
             gameMode = m; 
-            
-            // Visual Update: Forced Class Toggle
             const pvpBtn = document.getElementById('p-vs-p');
             const pvcBtn = document.getElementById('p-vs-c');
 
             if (m === 'pvp') {
-                pvpBtn.classList.add('active');
-                pvcBtn.classList.remove('active');
+                pvpBtn.classList.add('active-blue');
+                pvcBtn.classList.remove('active-blue');
             } else {
-                pvcBtn.classList.add('active');
-                pvpBtn.classList.remove('active');
+                pvcBtn.classList.add('active-blue');
+                pvpBtn.classList.remove('active-blue');
             }
-
             resetBoard(); 
+        }
+
+        // Special Reset function to handle the "Flash Blue" effect
+        function handleReset(btn) {
+            btn.classList.add('active-blue');
+            setTimeout(() => {
+                btn.classList.remove('active-blue');
+            }, 200); // Button turns blue for 200ms when clicked
+            resetBoard();
         }
 
         function handleMove(cell, idx) {
@@ -173,12 +172,31 @@
             checkResult();
         }
 
+        // SMART AI LOGIC
         function computerMove() {
-            let avail = boardState.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-            if (avail.length > 0) {
-                let r = avail[Math.floor(Math.random() * avail.length)];
-                makeMove(document.querySelectorAll('.cell')[r], r);
+            let move = findBestMove('O'); // Try to win
+            if (move === -1) move = findBestMove('X'); // Try to block
+            if (move === -1 && boardState[4] === "") move = 4; // Take center
+            
+            if (move === -1) {
+                let avail = boardState.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+                move = avail[Math.floor(Math.random() * avail.length)];
             }
+
+            if (move !== -1) {
+                makeMove(document.querySelectorAll('.cell')[move], move);
+            }
+        }
+
+        function findBestMove(symbol) {
+            for (let condition of wins) {
+                const [a, b, c] = condition;
+                const values = [boardState[a], boardState[b], boardState[c]];
+                if (values.filter(v => v === symbol).length === 2 && values.filter(v => v === "").length === 1) {
+                    return condition[values.indexOf("")];
+                }
+            }
+            return -1;
         }
 
         function checkResult() {
