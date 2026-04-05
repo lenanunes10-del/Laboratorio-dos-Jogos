@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enforcado | Helena Nunes</title>
+    <style>
+        html, body { height: 100%; margin: 0; }
+        body { 
+            display: flex; 
+            flex-direction: column; 
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            text-align: center; 
+            background-color: #fafafa; 
+            color: #1d1d1f; 
+        }
+        .game-header { padding: 40px 20px 20px; border-bottom: 1px solid #eaeaea; background: white; }
+        .back-link { color: #0066cc; text-decoration: none; font-weight: bold; font-size: 0.9rem; }
+        
+        .main-content { flex: 1; padding: 20px; }
+        
+        #hangman-display { 
+            font-size: 2.5rem; 
+            margin: 40px 0; 
+            font-family: 'Courier New', Courier, monospace; 
+            letter-spacing: 8px; 
+            font-weight: bold; 
+        }
+
+        #letters-container { max-width: 600px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+        
+        .letter-btn { 
+            width: 45px; height: 45px; font-size: 1.1rem; cursor: pointer; 
+            background: white; border: 1px solid #d2d2d7; border-radius: 8px; 
+            transition: 0.2s; text-transform: uppercase;
+        }
+        .letter-btn:hover:not(:disabled) { background-color: #f5f5f7; border-color: #86868b; }
+        .letter-btn.correct { background: #34c759; color: white; border-color: #34c759; }
+        .letter-btn.wrong { background: #ff3b30; color: white; border-color: #ff3b30; }
+        .letter-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        #status { margin-top: 30px; font-size: 1.3rem; font-weight: bold; min-height: 30px; }
+        
+        .reset-btn { 
+            margin-top: 30px; padding: 12px 30px; background: #0071e3; 
+            color: white; border: none; border-radius: 25px; 
+            cursor: pointer; font-weight: 600; font-size: 1rem;
+        }
+
+        .baseboard { width: 100%; text-align: center; padding: 40px 0; background-color: #f5f5f7; border-top: 1px solid #e5e5e5; }
+        .baseboard p { margin: 5px 0; font-size: 0.95rem; }
+        .baseboard a { color: #0066cc; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <a href="index.html" class="back-link" data-pt="← Voltar ao Menu" data-en="← Back to Menu">← Voltar ao Menu</a>
+        <h1 data-pt="Jogo do Enforcado" data-en="Hangman Game">Jogo do Enforcado</h1>
+    </div>
+
+    <div class="main-content">
+        <p data-pt="Adivinhe a palavra secreta:" data-en="Guess the secret word:">Adivinhe a palavra secreta:</p>
+        
+        <div id="hangman-display">_ _ _ _</div>
+        
+        <p>
+            <span data-pt="Vidas restantes: " data-en="Lives remaining: ">Vidas restantes: </span>
+            <span id="lives" style="color:#ff3b30; font-weight:bold;">6</span>
+        </p>
+        
+        <div id="letters-container"></div>
+        
+        <div id="status"></div>
+        
+        <button onclick="startGame()" class="reset-btn" data-pt="Nova Palavra" data-en="New Word">Nova Palavra</button>
+    </div>
+
+    <footer class="baseboard">
+        <p>
+            <strong>Email:</strong> lenanunes10@hotmail.com | 
+            <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/helena-viveiros-6a60371b6" target="_blank">helena-viveiros</a>
+        </p>
+        <p style="color: #86868b;" data-pt="Lisboa, Portugal" data-en="Lisbon, Portugal">Lisboa, Portugal</p>
+    </footer>
+
+    <script>
+        // Separate word lists per language
+        const wordLists = {
+            pt: ["JAVASCRIPT", "COMPUTADOR", "RIO", "AMARELO", "FADO"],
+            en: ["JAVASCRIPT", "COMPUTER", "SUNSHINE", "YELLOW", "RIVER", "FUN"]
+        };
+
+        let selectedWord, guessedLetters, lives;
+
+        function startGame() {
+            const lang = localStorage.getItem('selectedLang') || 'pt';
+            const currentList = wordLists[lang];
+            
+            selectedWord = currentList[Math.floor(Math.random() * currentList.length)].toUpperCase();
+            guessedLetters = [];
+            lives = 6;
+            
+            document.getElementById('lives').innerText = lives;
+            document.getElementById('status').innerText = "";
+            setupLetters();
+            updateDisplay();
+        }
+
+        function setupLetters() {
+            const container = document.getElementById('letters-container');
+            container.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').forEach(l => {
+                const b = document.createElement('button');
+                b.innerText = l; 
+                b.className = 'letter-btn'; 
+                b.onclick = () => guess(l, b);
+                container.appendChild(b);
+            });
+        }
+
+        function guess(letter, btn) {
+            btn.disabled = true;
+            if (selectedWord.includes(letter)) {
+                guessedLetters.push(letter);
+                btn.classList.add('correct');
+                updateDisplay();
+                checkWin();
+            } else {
+                lives--;
+                btn.classList.add('wrong');
+                document.getElementById('lives').innerText = lives;
+                checkLoss();
+            }
+        }
+
+        function updateDisplay() {
+            const display = selectedWord.split('').map(l => 
+                guessedLetters.includes(l) ? l : "_"
+            ).join(' ');
+            document.getElementById('hangman-display').innerText = display;
+        }
+
+        function checkWin() {
+            if (!document.getElementById('hangman-display').innerText.includes('_')) {
+                const lang = localStorage.getItem('selectedLang') || 'pt';
+                const status = document.getElementById('status');
+                status.innerText = lang === 'pt' ? "Ganhou! ✨" : "You Won! ✨";
+                status.style.color = "#34c759";
+                disableAll();
+            }
+        }
+
+        function checkLoss() {
+            if (lives <= 0) {
+                const lang = localStorage.getItem('selectedLang') || 'pt';
+                const status = document.getElementById('status');
+                const msg = lang === 'pt' ? "Perdeu! A palavra era: " : "Game Over! The word was: ";
+                status.innerText = msg + selectedWord;
+                status.style.color = "#ff3b30";
+                disableAll();
+            }
+        }
+
+        function disableAll() { 
+            document.querySelectorAll('.letter-btn').forEach(b => b.disabled = true); 
+        }
+
+        // Initialize page language and game
+        window.onload = () => {
+            const lang = localStorage.getItem('selectedLang') || 'pt';
+            
+            // Translate all static elements
+            document.querySelectorAll('[data-pt]').forEach(el => {
+                el.innerText = el.getAttribute(`data-${lang}`);
+            });
+            
+            startGame();
+        };
+    </script>
+</body>
+</html>

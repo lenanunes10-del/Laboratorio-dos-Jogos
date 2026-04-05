@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo do Galo | Helena Nunes</title>
+    <style>
+        html, body { height: 100%; margin: 0; }
+        body { display: flex; flex-direction: column; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: center; background-color: #fafafa; color: #1d1d1f; }
+        .game-header { padding: 40px 20px 20px; border-bottom: 1px solid #eaeaea; background: white; }
+        .back-link { color: #0066cc; text-decoration: none; font-weight: bold; font-size: 0.9rem; }
+        .main-content { flex: 1; padding: 20px; }
+        .mode-selection { margin-bottom: 20px; padding: 15px; background: white; border-radius: 12px; display: inline-block; border: 1px solid #e5e5e5; }
+        .mode-btn { padding: 8px 15px; margin: 5px; cursor: pointer; border: 2px solid #0066cc; background: white; color: #0066cc; border-radius: 20px; font-weight: bold; }
+        .mode-btn.active { background: #0066cc; color: white; }
+        .board { display: grid; grid-template-columns: repeat(3, 100px); grid-gap: 10px; justify-content: center; margin: 20px auto; }
+        .cell { width: 100px; height: 100px; background: white; border: 2px solid #d2d2d7; border-radius: 12px; font-size: 3rem; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .cell.x { color: #0071e3; } .cell.o { color: #ff3b30; }
+        #status { margin-top: 20px; font-size: 1.4rem; font-weight: bold; height: 40px; }
+        .reset-btn { margin-top: 20px; padding: 12px 30px; background: #0071e3; color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: 600; }
+        .baseboard { width: 100%; text-align: center; padding: 40px 0; background-color: #f5f5f7; border-top: 1px solid #e5e5e5; }
+        .baseboard p { margin: 5px 0; font-size: 0.95rem; }
+        .baseboard a { color: #0066cc; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <a href="index.html" class="back-link" data-pt="← Voltar ao Menu" data-en="← Back to Menu">← Voltar ao Menu</a>
+        <h1 data-pt="Jogo do Galo" data-en="Tic-Tac-Toe">Jogo do Galo</h1>
+    </div>
+
+    <div class="main-content">
+        <div class="mode-selection">
+            <p data-pt="Modo de jogo:" data-en="Game mode:">Modo de jogo:</p>
+            <button id="p-vs-p" class="mode-btn active" onclick="setMode('pvp')" data-pt="2 Jogadores" data-en="2 Players">2 Jogadores</button>
+            <button id="p-vs-c" class="mode-btn" onclick="setMode('pvc')" data-pt="Computador" data-en="Computer">Computador</button>
+        </div>
+
+        <div class="board" id="board">
+            <div class="cell" onclick="handleMove(this, 0)"></div><div class="cell" onclick="handleMove(this, 1)"></div><div class="cell" onclick="handleMove(this, 2)"></div>
+            <div class="cell" onclick="handleMove(this, 3)"></div><div class="cell" onclick="handleMove(this, 4)"></div><div class="cell" onclick="handleMove(this, 5)"></div>
+            <div class="cell" onclick="handleMove(this, 6)"></div><div class="cell" onclick="handleMove(this, 7)"></div><div class="cell" onclick="handleMove(this, 8)"></div>
+        </div>
+        
+        <div id="status"></div>
+        <button onclick="resetBoard()" class="reset-btn" data-pt="Reiniciar" data-en="Restart">Reiniciar</button>
+    </div>
+
+    <footer class="baseboard">
+        <p><strong>Email:</strong> lenanunes10@hotmail.com | <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/helena-viveiros-6a60371b6" target="_blank">helena-viveiros</a></p>
+        <p style="color: #86868b;" data-pt="Lisboa, Portugal" data-en="Lisbon, Portugal">Lisboa, Portugal</p>
+    </footer>
+
+    <script>
+        let currentPlayer = 'X', boardState = ["","","","","","","","",""], gameActive = true, gameMode = 'pvp';
+        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+        function setMode(m) { 
+            gameMode = m; 
+            document.getElementById('p-vs-p').classList.toggle('active', m==='pvp');
+            document.getElementById('p-vs-c').classList.toggle('active', m==='pvc');
+            resetBoard(); 
+        }
+
+        function handleMove(cell, idx) {
+            if (boardState[idx] !== "" || !gameActive) return;
+            makeMove(cell, idx);
+            if (gameActive && gameMode === 'pvc' && currentPlayer === 'O') setTimeout(computerMove, 500);
+        }
+
+        function makeMove(cell, idx) {
+            boardState[idx] = currentPlayer;
+            cell.innerText = currentPlayer;
+            cell.classList.add(currentPlayer.toLowerCase());
+            checkResult();
+        }
+
+        function computerMove() {
+            let avail = boardState.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+            if (avail.length > 0) {
+                let r = avail[Math.floor(Math.random() * avail.length)];
+                makeMove(document.querySelectorAll('.cell')[r], r);
+            }
+        }
+
+        function checkResult() {
+            let win = false;
+            for (let condition of wins) {
+                if (boardState[condition[0]] && boardState[condition[0]] === boardState[condition[1]] && boardState[condition[0]] === boardState[condition[2]]) { win = true; break; }
+            }
+            const lang = localStorage.getItem('selectedLang') || 'pt';
+            if (win) {
+                document.getElementById('status').innerText = (lang==='pt' ? "Jogador " : "Player ") + currentPlayer + (lang==='pt'?" Venceu!":" Won!");
+                gameActive = false; return;
+            }
+            if (!boardState.includes("")) { document.getElementById('status').innerText = lang==='pt'?"Empate!":"Draw!"; gameActive = false; return; }
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            document.getElementById('status').innerText = (lang==='pt'?"Vez do Jogador ":"Turn: Player ") + currentPlayer;
+        }
+
+        function resetBoard() {
+            currentPlayer = 'X'; boardState = ["","","","","","","","",""]; gameActive = true;
+            const lang = localStorage.getItem('selectedLang') || 'pt';
+            document.getElementById('status').innerText = lang==='pt'?"Vez do Jogador X":"Turn: Player X";
+            document.querySelectorAll('.cell').forEach(c => { c.innerText = ""; c.classList.remove('x','o'); });
+        }
+
+        window.onload = () => {
+            const lang = localStorage.getItem('selectedLang') || 'pt';
+            document.querySelectorAll('[data-pt]').forEach(el => el.innerText = el.getAttribute(`data-${lang}`));
+            resetBoard();
+        };
+    </script>
+</body>
+</html>
