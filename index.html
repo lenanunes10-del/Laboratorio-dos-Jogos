@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laboratório de Jogos | Helena Nunes</title>
     <style>
-        /* Sticky Footer & Layout Setup */
         html, body { height: 100%; margin: 0; }
         body { 
             display: flex; 
@@ -15,7 +14,6 @@
             background-color: #ffffff; 
         }
 
-        /* Language Toggle Button */
         .lang-switch {
             position: fixed;
             top: 20px;
@@ -36,11 +34,10 @@
         }
         .lang-btn:hover { background: #0066cc; transform: scale(1.05); }
 
-        /* Header - Added more padding to push content down */
         .header-title { 
             text-align: center; 
             font-size: 3.5rem; 
-            padding: 120px 20px 10px; /* Increased top padding */
+            padding: 120px 20px 10px; 
             margin: 0; 
             font-weight: 700; 
             letter-spacing: -1px; 
@@ -52,14 +49,13 @@
             font-size: 1.4rem; 
             color: #86868b; 
             margin-bottom: 20px;
-            font-style: italic; /* Style for the movie quote */
+            font-style: italic; 
         }
 
-        /* Main Content - Pushing the games further down */
         .main-content { 
             flex: 1; 
-            max-width: 1000px; 
-            margin: 60px auto 0; /* Added 60px margin at the top */
+            max-width: 1100px; 
+            margin: 60px auto 0; 
             padding: 20px; 
             width: 100%; 
             box-sizing: border-box; 
@@ -67,30 +63,33 @@
 
         .games-grid { 
             display: flex; 
-            gap: 40px; 
+            gap: 20px; 
             justify-content: center; 
             flex-wrap: wrap; 
         }
 
-        /* Game Cards */
         .game-card {
             background: #ffffff;
             border: 1px solid #e5e5e5;
             border-radius: 22px;
             padding: 40px;
-            width: 320px;
+            width: 300px;
             text-align: center;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
+        
         .game-card:hover { 
             border-color: #0066cc; 
             transform: translateY(-8px); 
             box-shadow: 0 20px 40px rgba(0,0,0,0.08); 
         }
 
-        .game-card h2 { margin-top: 0; font-size: 2rem; color: #000; }
-        .game-card p { line-height: 1.6; color: #515154; margin-bottom: 25px; }
+        .game-card h2 { margin-top: 0; font-size: 1.8rem; color: #000; }
+        .game-card p { line-height: 1.6; color: #515154; margin-bottom: 25px; flex-grow: 1; }
 
         .btn-play {
             display: block;
@@ -106,7 +105,6 @@
         }
         .btn-play:hover { background-color: #004499; }
 
-        /* Footer */
         .baseboard { width: 100%; text-align: center; padding: 60px 0; background-color: #f5f5f7; border-top: 1px solid #e5e5e5; }
         .baseboard p { margin: 8px 0; font-size: 1rem; }
         .baseboard a { color: #0066cc; text-decoration: none; font-weight: 600; }
@@ -126,24 +124,26 @@
         <div class="games-grid">
             
             <div class="game-card">
-                <h2 data-pt="O Enforcado" data-en="The Hangman">Enforcado</h2>
+                <h2 data-pt="O Enforcado" data-en="The Hangman">O Enforcado</h2>
                 <p data-pt="Tenta adivinhar a palavra antes que o número de tentativas esgote." 
-                   data-en="Try to guess the correct word before your number of chances runs out.">
+                   data-en="Try to guess the word before your number of tries runs out.">
                    Tenta adivinhar a palavra antes que o número de tentativas esgote.
                 </p>
                 <a href="enforcado.html" class="btn-play" data-pt="Jogar" data-en="Play">Jogar</a>
             </div>
-    <div class="game-card">
-    <h2 data-pt="Labirinto de Enigmas" data-en="Maze of Riddles">Labirinto de Enigmas</h2>
-    <p data-pt="5 niveis onde terás de explorar o labirintos e responder a enigmas para escapar!" 
-       data-en="5 levels where you'll have to go through mazes and solve riddles to escape!">
-       5 niveis onde terás de explorar o labirintos e responder a enigmas para escapar!
-    </p>
-    <a href="maze_of_riddles.html" class="btn-play" data-pt="Jogar" data-en="Play">Jogar</a>
-    </div>
+
+            <div class="game-card">
+                <h2 data-pt="Labirinto" data-en="Maze of Riddles">Labirinto</h2>
+                <p data-pt="Explora o labirinto e resolve enigmas para escapar!" 
+                   data-en="Explore the maze and solve riddles to escape!">
+                   5 níveis onde terás de explorar o labirintos e responder a enigmas para escapar!
+                </p>
+                <a href="maze_of_riddles.html" class="btn-play" data-pt="Jogar" data-en="Play">Jogar</a>
+            </div>
+
             <div class="game-card">
                 <h2 data-pt="Jogo do Galo" data-en="Tic-Tac-Toe">Jogo do Galo</h2>
-                <p data-pt="Podes jogar com um amigo ou contra o conputador." 
+                <p data-pt="Podes jogar com um amigo ou contra o computador." 
                    data-en="You can play with a friend or against the computer.">
                    Enfrenta o computador ou um amigo no clássico duelo de X contra O.
                 </p>
@@ -154,19 +154,14 @@
     </div>
 
     <footer class="baseboard">
-        <p>
-            <strong>Email:</strong> lenanunes10@hotmail.com | 
-            <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/helena-viveiros-6a60371b6" target="_blank">helena-viveiros</a>
-        </p>
+        <p><strong>Email:</strong> lenanunes10@hotmail.com | <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/helena-viveiros-6a60371b6" target="_blank">helena-viveiros</a></p>
         <p class="location" data-pt="Lisboa, Portugal" data-en="Lisbon, Portugal">Lisboa, Portugal</p>
     </footer>
 
     <script>
         let currentLang = localStorage.getItem('selectedLang') || 'pt';
 
-        window.onload = () => {
-            applyLanguage(currentLang);
-        };
+        window.onload = () => { applyLanguage(currentLang); };
 
         function toggleLanguage() {
             currentLang = currentLang === 'pt' ? 'en' : 'pt';
