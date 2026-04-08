@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laboratório de Jogos | Helena Nunes</title>
     <style>
-        html, body { height: 100%; margin: 0; }
+       
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            overflow-x: hidden; 
+        }
         body { 
             display: flex; 
             flex-direction: column; 
@@ -34,10 +39,11 @@
         }
         .lang-btn:hover { background: #0066cc; transform: scale(1.05); }
 
+        
         .header-title { 
             text-align: center; 
             font-size: 3.5rem; 
-            padding: 120px 20px 10px; 
+            padding: 100px 20px 10px; 
             margin: 0; 
             font-weight: 700; 
             letter-spacing: -1px; 
@@ -54,8 +60,8 @@
 
         .main-content { 
             flex: 1; 
-            max-width: 1100px; 
-            margin: 60px auto 0; 
+            max-width: 1200px; 
+            margin: 40px auto; 
             padding: 20px; 
             width: 100%; 
             box-sizing: border-box; 
@@ -65,15 +71,21 @@
             display: flex; 
             gap: 20px; 
             justify-content: center; 
-            flex-wrap: wrap; 
+            flex-wrap: nowrap; 
+            width: 100%;
+            padding: 20px 10px;
+            box-sizing: border-box;
         }
 
+        /* Cartões dos Jogos */
         .game-card {
             background: #ffffff;
             border: 1px solid #e5e5e5;
             border-radius: 22px;
-            padding: 40px;
-            width: 300px;
+            padding: 30px;
+            flex: 1 1 300px;
+            min-width: 220px; 
+            max-width: 350px;
             text-align: center;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
@@ -81,7 +93,7 @@
             flex-direction: column;
             justify-content: space-between;
         }
-        
+
         .game-card:hover { 
             border-color: #0066cc; 
             transform: translateY(-8px); 
@@ -89,7 +101,13 @@
         }
 
         .game-card h2 { margin-top: 0; font-size: 1.8rem; color: #000; }
-        .game-card p { line-height: 1.6; color: #515154; margin-bottom: 25px; flex-grow: 1; }
+        .game-card p { 
+            line-height: 1.6; 
+            color: #515154; 
+            margin-bottom: 25px; 
+            font-size: 0.95rem;
+            flex-grow: 1; 
+        }
 
         .btn-play {
             display: block;
@@ -99,16 +117,33 @@
             color: white;
             text-decoration: none;
             font-weight: bold;
-            padding: 14px 35px;
+            padding: 12px 30px;
             border-radius: 30px;
             transition: background 0.2s;
+            white-space: nowrap;
         }
         .btn-play:hover { background-color: #004499; }
 
-        .baseboard { width: 100%; text-align: center; padding: 60px 0; background-color: #f5f5f7; border-top: 1px solid #e5e5e5; }
+        /* Rodapé */
+        .baseboard { 
+            width: 100%; 
+            text-align: center; 
+            padding: 40px 0; 
+            background-color: #f5f5f7; 
+            border-top: 1px solid #e5e5e5; 
+        }
         .baseboard p { margin: 8px 0; font-size: 1rem; }
         .baseboard a { color: #0066cc; text-decoration: none; font-weight: 600; }
-        .location { color: #86868b; font-size: 0.9rem; margin-top: 15px; }
+        .location { color: #86868b; font-size: 0.9rem; margin-top: 10px; }
+
+        
+        @media (max-width: 768px) {
+            .games-grid {
+                overflow-x: auto; 
+                justify-content: flex-start;
+            }
+            .header-title { font-size: 2.5rem; }
+        }
     </style>
 </head>
 <body>
@@ -125,17 +160,17 @@
             
             <div class="game-card">
                 <h2 data-pt="O Enforcado" data-en="The Hangman">O Enforcado</h2>
-                <p data-pt="Tenta adivinhar a palavra antes que o número de tentativas esgote." 
-                   data-en="Try to guess the word before your number of tries runs out.">
-                   Tenta adivinhar a palavra antes que o número de tentativas esgote.
+                <p data-pt="Tenta adivinhar a palavra secreta antes que o número de tentativas se esgote." 
+                   data-en="Try to guess the secret word before your number of tries runs out.">
+                   Tenta adivinhar a palavra secreta antes que o número de tentativas se esgote.
                 </p>
                 <a href="enforcado.html" class="btn-play" data-pt="Jogar" data-en="Play">Jogar</a>
             </div>
 
             <div class="game-card">
-                <h2 data-pt="Labirinto" data-en="Maze of Riddles">Labirinto</h2>
-                <p data-pt="Explora o labirinto e resolve enigmas para escapar!" 
-                   data-en="Explore the maze and solve riddles to escape!">
+                <h2 data-pt="Labirinto de Enigmas" data-en="Maze of Riddles">Labirinto de Enigmas</h2>
+                <p data-pt="5 níveis onde terás de explorar labirintos e responder a enigmas para escapar!" 
+                   data-en="5 levels where you'll have to go through mazes and solve riddles to escape!">
                    5 níveis onde terás de explorar o labirintos e responder a enigmas para escapar!
                 </p>
                 <a href="maze_of_riddles.html" class="btn-play" data-pt="Jogar" data-en="Play">Jogar</a>
@@ -143,8 +178,8 @@
 
             <div class="game-card">
                 <h2 data-pt="Jogo do Galo" data-en="Tic-Tac-Toe">Jogo do Galo</h2>
-                <p data-pt="Podes jogar com um amigo ou contra o computador." 
-                   data-en="You can play with a friend or against the computer.">
+                <p data-pt="Enfrenta o computador ou um amigo no clássico duelo de X contra O." 
+                   data-en="Face off against the computer or a friend in the classic X vs O duel.">
                    Enfrenta o computador ou um amigo no clássico duelo de X contra O.
                 </p>
                 <a href="galo.html" class="btn-play" data-pt="Jogar" data-en="Play">Jogar</a>
@@ -154,14 +189,20 @@
     </div>
 
     <footer class="baseboard">
-        <p><strong>Email:</strong> lenanunes10@hotmail.com | <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/helena-viveiros-6a60371b6" target="_blank">helena-viveiros</a></p>
+        <p>
+            <strong>Email:</strong> lenanunes10@hotmail.com | 
+            <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/helena-viveiros-6a60371b6" target="_blank">helena-viveiros</a>
+        </p>
         <p class="location" data-pt="Lisboa, Portugal" data-en="Lisbon, Portugal">Lisboa, Portugal</p>
     </footer>
 
     <script>
+       
         let currentLang = localStorage.getItem('selectedLang') || 'pt';
 
-        window.onload = () => { applyLanguage(currentLang); };
+        window.onload = () => {
+            applyLanguage(currentLang);
+        };
 
         function toggleLanguage() {
             currentLang = currentLang === 'pt' ? 'en' : 'pt';
@@ -172,7 +213,8 @@
         function applyLanguage(lang) {
             const elements = document.querySelectorAll('[data-pt]');
             elements.forEach(el => {
-                el.innerText = el.getAttribute(`data-${lang}`);
+                const text = el.getAttribute(`data-${lang}`);
+                if (text) el.innerText = text;
             });
         }
     </script>
