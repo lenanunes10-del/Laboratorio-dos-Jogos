@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labirinto de Enigmas | Helena Nunes</title>
+    <style>
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        body { 
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            text-align: center; 
+            background-color: #fafafa; 
+            color: #1d1d1f; 
+        }
+
+
+        .game-header { 
+            padding: 40px 20px 20px; 
+            border-bottom: 1px solid #eaeaea; 
+            background: white; 
+            text-align: center;
+        }
+        
+        .header-top {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .back-link { color: #0066cc; text-decoration: none; font-weight: bold; font-size: 0.9rem; }
+        h1 { margin: 15px 0 5px; font-size: 2rem; }
+
+         #ui-info { 
+           margin-top: 10px; 
+           font-size: 1.1rem; 
+           color: #1d1d1f; 
+          font-weight: 500;
+         }
+
+        #level-val { 
+           color: #0066cc; 
+          font-weight: 700;
+         }
+
+        #attempts-left {
+           margin-top: 20px;
+           color: #1d1d1f!important; 
+           font-weight: 600;
+         }
+
+
+        #attempts-num {
+           color: #ff3b30!important;
+           font-weight: bold;
+        }
+       
+       #key-val {
+          color: initial; 
+          font-weight: normal;
+       }
+        
+       
+        .main-content { 
+            flex: 1; 
+            padding: 40px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative; 
+        }
+
+        #maze-container {
+            display: grid; 
+            grid-template-columns: repeat(10, 45px); 
+            grid-template-rows: repeat(10, 45px);
+            width: 450px; height: 450px; border: 5px solid #333; background: #111;
+        }
+
+        .cell { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; }
+        .wall { background: #444; }
+        .player { background: #0071e3; border-radius: 50%; transform: scale(0.7); box-shadow: 0 0 20px #0071e3; z-index: 10; }
+        .door { background: #aa6600; font-size: 1.5rem; }
+        .spike::after { content: "▲"; color: #ff3b30; }
+        .lava { background: #ff4500; animation: glow 1s infinite alternate; }
+        .key { 
+         background: none; 
+         font-size: 1.2rem; 
+         box-shadow: none;
+}
+        .guard { background: #ff3b30; border-radius: 50%; transform: scale(0.7); }
+
+        
+        #riddle-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98); flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+        }
+        #riddle-display { font-size: 2.5rem; margin: 20px 0; font-family: 'Courier New', monospace; color: #0071e3; letter-spacing: 8px; font-weight: bold; min-height: 50px; }
+        #letters-container { max-width: 600px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+        .letter-btn { width: 45px; height: 45px; cursor: pointer; background: white; border: 1px solid #d2d2d7; border-radius: 8px; font-weight: bold; }
+        .answer-btn { margin-top: 30px; padding: 12px 40px; background: #0071e3; color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: 600; }
+
+       
+        .baseboard { 
+            width: 100%; 
+            text-align: center; 
+            padding: 40px 0; 
+            background-color: #f5f5f7; 
+            border-top: 1px solid #e5e5e5;
+            margin-top: auto; 
+        }
+        .victory-message {
+            color: #0066cc; 
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+        }
+        .confetti {
+           position: absolute;
+         width: 10px;
+        height: 10px;
+        background-color: #f00;
+         top: -10px;
+         z-index: 1001;
+        border-radius: 20%;
+        animation: fall linear forwards;
+         }
+
+     @keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        }
+   }
+        @keyframes glow { from { opacity: 0.6; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <header class="game-header">
+        <div class="header-top"><a href="index.html" class="back-link">← Voltar ao Menu</a></div>
+        <h1>Labirinto de Enigmas</h1>
+        <div id="ui-info">Nível: <span id="level-val">1</span> | Chave: <span id="key-val"></span></div>
+    </header>
+
+    <div class="main-content">
+        <div id="maze-container"></div>
+        <div id="riddle-overlay">
+            <h2 id="question-text"></h2>
+            <div id="riddle-display"></div>
+            <div id="letters-container"></div>
+            <div id="attempts-left" style="color:#ff3b30; font-weight:bold; margin-top:20px;"></div>
+            <button class="answer-btn" onclick="checkAnswer()">VERIFICAR</button>
+            <button onclick="clearInput()" style="background:none; border:none; color:#0066cc; cursor:pointer; margin-top:15px; font-weight:600; text-decoration: underline;">Limpar</button>
+        </div>
+    </div>
+
+    <footer class="baseboard">
+        <p><strong>Email:</strong> lenanunes10@hotmail.com | <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/helena-viveiros-6a60371b6" target="_blank">helena-viveiros</a></p>
+        <p style="color: #86868b;">Lisboa, Portugal</p>
+    </footer>
+
+<script>
+    const MAZE_LEVELS = [
+        [ [1,1,1,1,1,1,1,1,1,1],[1,0,0,3,0,0,0,0,0,1],[1,0,1,1,1,3,1,3,0,1],[1,0,1,0,0,0,0,1,0,1],[1,0,1,0,1,1,0,1,0,1],[1,0,0,0,1,0,0,0,0,1],[1,1,1,0,1,1,1,1,0,1],[1,5,0,0,3,0,0,0,0,1],[1,3,3,1,1,1,1,1,2,1],[1,1,1,1,1,1,1,1,1,1] ],
+        [ [1,1,1,1,1,1,1,1,1,1],[1,0,0,0,4,4,0,0,0,1],[1,1,1,0,4,0,0,1,0,1],[1,0,0,0,4,2,3,0,0,1],[1,0,4,0,4,4,4,4,0,1],[1,0,0,0,0,0,3,0,0,1],[1,4,1,0,4,4,0,0,4,1],[1,5,0,0,0,4,0,4,0,1],[1,3,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1] ],
+        [ [1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,3,1],[1,1,1,1,0,1,1,1,0,1],[1,0,0,0,0,0,3,1,0,1],[1,0,3,3,1,0,5,0,0,1],[1,0,0,0,1,1,1,1,1,1],[1,1,1,0,0,3,0,0,0,1],[1,0,0,0,1,1,0,3,0,1],[1,1,1,0,0,0,0,1,2,1],[1,1,1,1,1,1,1,1,1,1] ],
+        [ [1,1,1,1,1,1,1,1,1,1],[1,0,1,0,5,0,1,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,1,0,1,0,1,0,0,1],[1,0,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,0,1],[1,1,1,1,1,1,1,1,0,1],[1,0,0,0,0,0,0,0,2,1],[1,1,1,1,1,1,1,1,1,1] ],
+        [ [1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,5,0,0,1],[1,0,4,4,4,4,4,4,0,1],[1,0,0,0,0,0,0,4,0,1],[1,4,4,4,0,4,0,0,0,1],[1,0,0,4,0,4,4,4,4,1],[1,0,4,4,0,0,0,0,0,1],[1,0,0,0,0,4,4,4,0,1],[1,4,4,4,0,0,0,0,2,1],[1,1,1,1,1,1,1,1,1,1] ]
+    ];
+
+    
+    const riddleDatabase = [
+        [{q:"O que voa sem ter asas?", a:"TEMPO"}, {q:"Anda mas não tem pés?", a:"RELOGIO"}, {q:"Tem pernas mas não anda?", a:"MESA"}],
+        [{q:"Falo sem boca e ouço sem ouvidos. Não tenho corpo, mas ganho vida com o vento. O que sou eu?", a:"ECO"}, {q:"Sou tão frágil que, se limitares a dizer o meu nome, tu quebras-me. O que sou?", a:"SILENCIO"}, {q:"Quem o fabrica, não precisa dele. Quem o compra, não o quer. Quem precisa dele, não o sabe. O que é?", a:"CAIXAO"}],
+        [{q:"Qual o mes com 28 dias?", a:"TODOS"}, {q:"Põe-se na mesa, parte-se, reparte-se, mas não se come, que é?", a:"BARALHO"}, {q:"O que é, o que é? Feito para andar e não anda?", a:"RUA"}],
+        [{q:"O que é que atravessa o rio e não se molha?", a:"PONTE"}, {q:"Onde é que o sucesso vem antes do trabalho?", a:"DICIONARIO"}, {q:"Corre o mundo sem sair do canto?", a:"SELO"}],
+        [{q:"Só existo onde há luz, mas se a luz brilhar diretamente sobre mim, eu desapareço. O que sou?", a:"SOMBRA"}, {q:"Quanto mais cresce menos se vê?", a:"ESCURIDAO"}, {q:"Tem cidades mas não casas?", a:"MAPA"}]
+    ];
+
+    let currentLevel = 0, playerPos = {x:1, y:1}, hasKey = false, userGuess = "", guards = [], selectedRiddle = null, attempts = 3;
+
+    function initLevel() {
+        hasKey = false; playerPos = {x:1, y:1}; guards = []; attempts = 3;
+        if(currentLevel === 2) guards = [{x: 6, y: 3, dir: 1}];
+        if(currentLevel === 3) guards = [{x: 5, y: 2, dir: 1}];
+        if(currentLevel === 4) guards = [{x: 1, y: 1, dir: 1}, {x: 7, y: 8, dir: -1}];
+        updateUI(); drawMaze();
+    }
+
+    function drawMaze() {
+        const container = document.getElementById('maze-container');
+        container.innerHTML = '';
+        MAZE_LEVELS[currentLevel].forEach((row, y) => {
+            row.forEach((cell, x) => {
+                const div = document.createElement('div');
+                div.className = 'cell ' + (cell===1?'wall':cell===2?'door':cell===3?'spike':cell===4?'lava':cell===5&&!hasKey?'key':'');
+                if(cell===2) div.innerText = "🚪";
+                if(cell === 5 && !hasKey) div.innerText = "🔑";
+                if(x===playerPos.x && y===playerPos.y) div.classList.add('player');
+                guards.forEach(g => { if(x===g.x && y===g.y) div.classList.add('guard'); });
+                container.appendChild(div);
+            });
+        });
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (document.getElementById('riddle-overlay').style.display === 'flex') return;
+        let nX = playerPos.x, nY = playerPos.y;
+        if (e.key === 'ArrowUp') nY--; if (e.key === 'ArrowDown') nY++;
+        if (e.key === 'ArrowLeft') nX--; if (e.key === 'ArrowRight') nX++;
+        
+        const map = MAZE_LEVELS[currentLevel];
+        if (map[nY] && map[nY][nX] !== 1) {
+            playerPos.x = nX; playerPos.y = nY;
+            if (map[nY][nX] === 3 || map[nY][nX] === 4) { playerPos = {x:1, y:1}; hasKey = false; }
+            if (map[nY][nX] === 5) hasKey = true;
+            if (map[nY][nX] === 2 && hasKey) triggerRiddle();
+        }
+        checkCollisions(); updateUI(); drawMaze();
+    });
+
+    
+    function triggerRiddle() {
+        const pool = riddleDatabase[currentLevel];
+        selectedRiddle = pool[Math.floor(Math.random() * pool.length)];
+        
+        document.getElementById('maze-container').style.filter = "blur(10px)";
+        document.getElementById('riddle-overlay').style.display = 'flex';
+        document.getElementById('question-text').innerText = selectedRiddle.q;
+        document.getElementById('attempts-left').innerHTML = `Tentativas: <span id="attempts-num">${attempts}</span>`;
+        userGuess = ""; 
+        document.getElementById('riddle-display').innerText = "";
+    }
+    
+    function checkAnswer() {
+        
+    if (userGuess.toUpperCase() === selectedRiddle.a.toUpperCase()) {
+       
+        if (currentLevel < MAZE_LEVELS.length - 1) {
+            currentLevel++;
+            document.getElementById('riddle-overlay').style.display = 'none';
+            document.getElementById('maze-container').style.filter = "none";
+            initLevel();
+        } 
+        else {
+            const overlay = document.getElementById('riddle-overlay');
+            document.getElementById('maze-container').style.filter = "none";
+            overlay.innerHTML = `
+                <div class="victory-message" style="padding: 30px; text-align: center;">
+                    <h2 style="color: #0066cc; margin-bottom: 15px;">✨ Parabéns!✨</h2>
+                    <p style="color: #1d1d1f; font-size: 1.2rem; margin-bottom: 20px;">
+                        És um verdadeiro mestre de Enigmas! 🏆
+                    </p>
+                    <button class="btn" onclick="location.reload()" 
+                        style="background: #0071e3; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+                        Jogar Novamente
+                    </button>
+                </div>
+       `;
+           launchConfetti();
+        }
+    } else {
+       
+        attempts--;
+if (attempts <= 0) {
+                alert("Nível reiniciado.");
+                document.getElementById('riddle-overlay').style.display = 'none';
+                document.getElementById('maze-container').style.filter = "none";
+                initLevel();
+            } else {
+                document.getElementById('attempts-left').innerHTML = `Tentativas: <span id="attempts-num">${attempts}</span>`;
+                clearInput();
+            }
+        }
+    }
+        
+    function checkCollisions() {
+        guards.forEach(g => { if(g.x === playerPos.x && g.y === playerPos.y) { playerPos = {x:1, y:1}; hasKey = false; } });
+    }
+
+    setInterval(() => {
+        if (document.getElementById('riddle-overlay').style.display === 'flex') return;
+        guards.forEach(g => {
+            let nX = g.x + g.dir;
+            if (MAZE_LEVELS[currentLevel][g.y][nX] === 1 || MAZE_LEVELS[currentLevel][g.y][nX] === 4) g.dir *= -1;
+            else g.x = nX;
+        });
+        checkCollisions(); drawMaze();
+    }, 600);
+
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+        const btn = document.createElement('button'); btn.innerText = l; btn.className = 'letter-btn';
+        btn.onclick = () => { userGuess += l; document.getElementById('riddle-display').innerText = userGuess; };
+        document.getElementById('letters-container').appendChild(btn);
+    });
+
+    function clearInput() { userGuess = ""; document.getElementById('riddle-display').innerText = ""; }
+    function updateUI() { 
+        document.getElementById('level-val').innerText = currentLevel + 1;
+        document.getElementById('key-val').innerText = hasKey ? '🔑' : ' ';
+    }
+    initLevel();
+    function launchConfetti() {
+    const container = document.getElementById('riddle-overlay');
+    const colors = ['#0071e3', '#ff3b30', '#34c759', '#ffcc00', '#af52de'];
+
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        confetti.style.opacity = Math.random();
+        container.appendChild(confetti);
+    }
+}
+</script>
+</body>
+</html>
