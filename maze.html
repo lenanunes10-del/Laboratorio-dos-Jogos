@@ -179,7 +179,7 @@
     const riddleDatabase = [
         [{q:"O que voa sem ter asas?", a:"TEMPO"}, {q:"Anda mas não tem pés?", a:"RELOGIO"}, {q:"Tem pernas mas não anda?", a:"MESA"}],
         [{q:"Falo sem boca e ouço sem ouvidos. Não tenho corpo, mas ganho vida com o vento. O que sou eu?", a:"ECO"}, {q:"Sou tão frágil que, se limitares a dizer o meu nome, tu quebras-me. O que sou?", a:"SILENCIO"}, {q:"Quem o fabrica, não precisa dele. Quem o compra, não o quer. Quem precisa dele, não o sabe. O que é?", a:"CAIXAO"}],
-        [{q:"Qual o mes com 28 dias?", a:"TODOS"}, {q:"Põe-se na mesa, parte-se, reparte-se, mas não se come, que é?", a:"BARALHO"}, {q:"O que é, o que é? Feito para andar e não anda?", a:"RUA"}],
+        [{q:"Qual o mes com 28 dias?", a:"TODOS"}, {q:"Põe-se na mesa, parte-se, reparte-se, mas não se come, que é?", a:"BARALHO"}, {q:"O que é feito para andar e não anda?", a:"RUA"}],
         [{q:"O que é que atravessa o rio e não se molha?", a:"PONTE"}, {q:"Onde é que o sucesso vem antes do trabalho?", a:"DICIONARIO"}, {q:"Corre o mundo sem sair do canto?", a:"SELO"}],
         [{q:"Só existo onde há luz, mas se a luz brilhar diretamente sobre mim, eu desapareço. O que sou?", a:"SOMBRA"}, {q:"Quanto mais cresce menos se vê?", a:"ESCURIDAO"}, {q:"Tem cidades mas não casas?", a:"MAPA"}]
     ];
@@ -190,7 +190,7 @@
         hasKey = false; playerPos = {x:1, y:1}; guards = []; attempts = 3;
         if(currentLevel === 2) guards = [{x: 6, y: 3, dir: 1}];
         if(currentLevel === 3) guards = [{x: 5, y: 2, dir: 1}, {x:1, y:7, dir:-1}];
-        if(currentLevel === 4) guards = [{x: 1, y: 2, dir: -1}, {x: 1, y: 5, dir: 1}, {x: 7, y: 8, dir: -1}];
+        if(currentLevel === 4) guards = [{x: 4, y: 2, dir: -1}, {x: 3, y: 5, dir: 1}, {x: 7, y: 8, dir: -1}];
         updateUI(); drawMaze();
     }
 
