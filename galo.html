@@ -141,7 +141,6 @@
             resetBoard(); 
         }
 
-        // Special Reset function to handle the "Flash Blue" effect
         function handleReset(btn) {
             btn.classList.add('active-blue');
             setTimeout(() => {
@@ -165,7 +164,6 @@
             checkResult();
         }
 
-        // SMART AI LOGIC
         function computerMove() {
             let move = findBestMove('O'); // Try to win
             if (move === -1) move = findBestMove('X'); // Try to block
