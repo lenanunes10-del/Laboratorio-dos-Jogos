@@ -85,7 +85,7 @@
     </footer>
 
     <script>
-        // Separate word lists per language
+       
         const wordLists = {
             pt: ["JAVASCRIPT", "COMPUTADOR", "RIO", "AMARELO", "FADO"],
             en: ["JAVASCRIPT", "COMPUTER", "SUNSHINE", "YELLOW", "RIVER", "FUN"]
@@ -166,11 +166,9 @@
             document.querySelectorAll('.letter-btn').forEach(b => b.disabled = true); 
         }
 
-        // Initialize page language and game
         window.onload = () => {
             const lang = localStorage.getItem('selectedLang') || 'pt';
             
-            // Translate all static elements
             document.querySelectorAll('[data-pt]').forEach(el => {
                 el.innerText = el.getAttribute(`data-${lang}`);
             });
