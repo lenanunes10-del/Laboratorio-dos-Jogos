@@ -189,8 +189,8 @@
     function initLevel() {
         hasKey = false; playerPos = {x:1, y:1}; guards = []; attempts = 3;
         if(currentLevel === 2) guards = [{x: 6, y: 3, dir: 1}];
-        if(currentLevel === 3) guards = [{x: 5, y: 2, dir: 1}];
-        if(currentLevel === 4) guards = [{x: 1, y: 1, dir: 1}, {x: 7, y: 8, dir: -1}];
+        if(currentLevel === 3) guards = [{x: 5, y: 2, dir: 1}, {x:1, y:7, dir:-1}];
+        if(currentLevel === 4) guards = [{x: 1, y: 2, dir: -1}, {x: 1, y: 5, dir: 1}, {x: 7, y: 8, dir: -1}];
         updateUI(); drawMaze();
     }
 
