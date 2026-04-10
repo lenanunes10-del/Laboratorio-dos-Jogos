@@ -159,7 +159,10 @@
             <div id="letters-container"></div>
             <div id="attempts-left" style="color:#ff3b30; font-weight:bold; margin-top:20px;"></div>
             <button class="answer-btn" data-pt="VERIFICAR" data-en="VERIFY" onclick="checkAnswer()">VERIFICAR</button>
-            <button onclick="clearInput()" style="background:none; border:none; color:#0066cc; cursor:pointer; margin-top:15px; font-weight:600; text-decoration: underline;">Limpar</button>
+            <button onclick="clearInput()" 
+                data-pt="Limpar"
+                data-en="Clear"
+                style="background:none; border:none; color:#0066cc; cursor:pointer; margin-top:15px; font-weight:600; text-decoration: underline;">Limpar</button>
         </div>
     </div>
 
@@ -170,7 +173,7 @@
 
 <script>
 
-    let currentLang = localStorage.getItem('selectedLanguage') || 'pt'; 
+    let currentLang = localStorage.getItem('selectedLang') || 'pt'; 
 
     function applyLanguage() {
         const elements = document.querySelectorAll('[data-pt]');
@@ -201,8 +204,10 @@
         en:[
         [{q:"What month has 28 days?", a:"ALL"}, {q:"What flies without wings?", a:"TIME"}, {q:"O que é feito para andar e não anda?", a:"RUA"}],
         [{q:"O que é que atravessa o rio e não se molha?", a:"PONTE"}, {q:"Onde é que o sucesso vem antes do trabalho?", a:"DICIONARIO"}, {q:"Corre o mundo sem sair do canto?", a:"SELO"}],
-        [{q:"Só existo onde há luz, mas se a luz brilhar diretamente sobre mim, eu desapareço. O que sou?", a:"SOMBRA"}, {q:"Quanto mais cresce menos se vê?", a:"ESCURIDAO"}, {q:"Tem cidades mas não casas?", a:"MAPA"}]    
-    ]
+        [{q:"Só existo onde há luz, mas se a luz brilhar diretamente sobre mim, eu desapareço. O que sou?", a:"SOMBRA"}, {q:"Quanto mais cresce menos se vê?", a:"ESCURIDAO"}, {q:"Tem cidades mas não casas?", a:"MAPA"}],    
+        [{q:"O que é que atravessa o rio e não se molha?", a:"PONTE"}, {q:"Onde é que o sucesso vem antes do trabalho?", a:"DICIONARIO"}, {q:"Corre o mundo sem sair do canto?", a:"SELO"}],
+        [{q:"Só existo onde há luz, mas se a luz brilhar diretamente sobre mim, eu desapareço. O que sou?", a:"SOMBRA"}, {q:"Quanto mais cresce menos se vê?", a:"ESCURIDAO"}, {q:"Tem cidades mas não casas?", a:"MAPA"}] 
+        ]
             };
 
     let currentLevel = 0, playerPos = {x:1, y:1}, hasKey = false, userGuess = "", guards = [], selectedRiddle = null, attempts = 3;
@@ -255,8 +260,10 @@
         document.getElementById('maze-container').style.filter = "blur(10px)";
         document.getElementById('riddle-overlay').style.display = 'flex';
         document.getElementById('question-text').innerText = selectedRiddle.q;
-        const attemptText = currentLang === 'pt' ? 'Tentativas' : 'Attempts';
-        document.getElementById('attempts-left').innerHTML = `Tentativas: <span id="attempts-num">${attempts}</span>`;
+        
+        const attemptLabel = (currentLang === 'en') ? "Attempts" : "Tentativas";
+    document.getElementById('attempts-left').innerHTML = `${attemptLabel}: <span id="attempts-num">${attempts}</span>`;
+    
         userGuess = ""; 
         document.getElementById('riddle-display').innerText = "";
     }
@@ -297,12 +304,14 @@ overlay.innerHTML = `
        
         attempts--;
 if (attempts <= 0) {
-                alert("Nível reiniciado.");
+                const alertMsg = (currentLang === 'en') ? "Level reset." : "Nível reiniciado.";
+            alert(alertMsg);
                 document.getElementById('riddle-overlay').style.display = 'none';
                 document.getElementById('maze-container').style.filter = "none";
                 initLevel();
             } else {
-                document.getElementById('attempts-left').innerHTML = `Tentativas: <span id="attempts-num">${attempts}</span>`;
+    const attemptLabel = (currentLang === 'en') ? "Attempts" : "Tentativas";            
+   document.getElementById('attempts-left').innerHTML = `${attemptLabel}: <span id="attempts-num">${attempts}</span>`;
                 clearInput();
             }
         }
