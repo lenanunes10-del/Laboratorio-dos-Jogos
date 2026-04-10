@@ -145,8 +145,10 @@
 
     <header class="game-header">
         <div class="header-top"><a href="index.html" class="back-link">← Voltar ao Menu</a></div>
-        <h1>Labirinto de Enigmas</h1>
-        <div id="ui-info">Nível: <span id="level-val">1</span> | Chave: <span id="key-val"></span></div>
+        <h1 data-pt="Labirinto de Enigmas" data-en="Maze of Riddles">Labirinto de Enigmas</h1>
+        <div id="ui-info">
+        <span data-pt="Nível" data-en="Level">Nível</span>: <span id="level-val">1</span> | 
+        <span data-pt="Chave" data-en="Key">Chave</span>: <span id="key-val"></span> </div>
     </header>
 
     <div class="main-content">
@@ -156,7 +158,7 @@
             <div id="riddle-display"></div>
             <div id="letters-container"></div>
             <div id="attempts-left" style="color:#ff3b30; font-weight:bold; margin-top:20px;"></div>
-            <button class="answer-btn" onclick="checkAnswer()">VERIFICAR</button>
+            <button class="answer-btn" data-pt="VERIFICAR" data-en="VERIFY" onclick="checkAnswer()">VERIFICAR</button>
             <button onclick="clearInput()" style="background:none; border:none; color:#0066cc; cursor:pointer; margin-top:15px; font-weight:600; text-decoration: underline;">Limpar</button>
         </div>
     </div>
@@ -167,6 +169,18 @@
     </footer>
 
 <script>
+
+    let currentLang = localStorage.getItem('selectedLanguage') || 'pt'; 
+
+    function applyLanguage() {
+        const elements = document.querySelectorAll('[data-pt]');
+        elements.forEach(el => {
+            const text = el.getAttribute(`data-${currentLang}`);
+            if (text) el.innerText = text;
+        });
+    }
+
+    window.addEventListener('load', applyLanguage);
     const MAZE_LEVELS = [
         [ [1,1,1,1,1,1,1,1,1,1],[1,0,0,3,0,0,0,0,0,1],[1,0,1,1,1,3,1,3,0,1],[1,0,1,0,0,0,0,1,0,1],[1,0,1,0,1,1,0,1,0,1],[1,0,0,0,1,0,0,0,0,1],[1,1,1,0,1,1,1,1,0,1],[1,5,0,0,3,0,0,0,0,1],[1,3,3,1,1,1,1,1,2,1],[1,1,1,1,1,1,1,1,1,1] ],
         [ [1,1,1,1,1,1,1,1,1,1],[1,0,0,0,4,4,0,0,0,1],[1,1,1,0,4,0,0,1,0,1],[1,0,0,0,4,2,3,0,0,1],[1,0,4,0,4,4,4,4,0,1],[1,0,0,0,0,0,3,0,0,1],[1,4,1,0,4,4,0,0,4,1],[1,5,0,0,0,4,0,4,0,1],[1,3,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1] ],
@@ -176,13 +190,20 @@
     ];
 
     
-    const riddleDatabase = [
+    const riddleDatabase ={ 
+        pt:[
         [{q:"O que voa sem ter asas?", a:"TEMPO"}, {q:"Anda mas não tem pés?", a:"RELOGIO"}, {q:"Tem pernas mas não anda?", a:"MESA"}],
         [{q:"Falo sem boca e ouço sem ouvidos. Não tenho corpo, mas ganho vida com o vento. O que sou eu?", a:"ECO"}, {q:"Sou tão frágil que, se limitares a dizer o meu nome, tu quebras-me. O que sou?", a:"SILENCIO"}, {q:"Quem o fabrica, não precisa dele. Quem o compra, não o quer. Quem precisa dele, não o sabe. O que é?", a:"CAIXAO"}],
         [{q:"Qual o mes com 28 dias?", a:"TODOS"}, {q:"Põe-se na mesa, parte-se, reparte-se, mas não se come, que é?", a:"BARALHO"}, {q:"O que é feito para andar e não anda?", a:"RUA"}],
         [{q:"O que é que atravessa o rio e não se molha?", a:"PONTE"}, {q:"Onde é que o sucesso vem antes do trabalho?", a:"DICIONARIO"}, {q:"Corre o mundo sem sair do canto?", a:"SELO"}],
         [{q:"Só existo onde há luz, mas se a luz brilhar diretamente sobre mim, eu desapareço. O que sou?", a:"SOMBRA"}, {q:"Quanto mais cresce menos se vê?", a:"ESCURIDAO"}, {q:"Tem cidades mas não casas?", a:"MAPA"}]
-    ];
+    ],
+        en:[
+        [{q:"What month has 28 days?", a:"ALL"}, {q:"What flies without wings?", a:"TIME"}, {q:"O que é feito para andar e não anda?", a:"RUA"}],
+        [{q:"O que é que atravessa o rio e não se molha?", a:"PONTE"}, {q:"Onde é que o sucesso vem antes do trabalho?", a:"DICIONARIO"}, {q:"Corre o mundo sem sair do canto?", a:"SELO"}],
+        [{q:"Só existo onde há luz, mas se a luz brilhar diretamente sobre mim, eu desapareço. O que sou?", a:"SOMBRA"}, {q:"Quanto mais cresce menos se vê?", a:"ESCURIDAO"}, {q:"Tem cidades mas não casas?", a:"MAPA"}]    
+    ]
+            };
 
     let currentLevel = 0, playerPos = {x:1, y:1}, hasKey = false, userGuess = "", guards = [], selectedRiddle = null, attempts = 3;
 
@@ -228,12 +249,13 @@
 
     
     function triggerRiddle() {
-        const pool = riddleDatabase[currentLevel];
+        const pool = riddleDatabase[currentLang][currentLevel];
         selectedRiddle = pool[Math.floor(Math.random() * pool.length)];
         
         document.getElementById('maze-container').style.filter = "blur(10px)";
         document.getElementById('riddle-overlay').style.display = 'flex';
         document.getElementById('question-text').innerText = selectedRiddle.q;
+        const attemptText = currentLang === 'pt' ? 'Tentativas' : 'Attempts';
         document.getElementById('attempts-left').innerHTML = `Tentativas: <span id="attempts-num">${attempts}</span>`;
         userGuess = ""; 
         document.getElementById('riddle-display').innerText = "";
@@ -252,17 +274,22 @@
         else {
             const overlay = document.getElementById('riddle-overlay');
             document.getElementById('maze-container').style.filter = "none";
-            overlay.innerHTML = `
-                <div class="victory-message" style="padding: 30px; text-align: center;">
-                    <h2 style="color: #0066cc; margin-bottom: 15px;">✨ Parabéns!✨</h2>
-                    <p style="color: #1d1d1f; font-size: 1.2rem; margin-bottom: 20px;">
-                        És um verdadeiro mestre de Enigmas! 🏆
-                    </p>
-                    <button class="btn" onclick="location.reload()" 
-                        style="background: #0071e3; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
-                        Jogar Novamente
-                    </button>
-                </div>
+            const winTitle = (currentLang === 'en') ? "✨ Congratulations!✨" : "✨ Parabéns!✨";
+          const winMsg = (currentLang === 'en') ? "You are a true Riddle Master! 🏆" : "És um verdadeiro mestre de Enigmas! 🏆";
+         const btnText = (currentLang === 'en') ? "Play Again" : "Jogar Novamente";
+
+overlay.innerHTML = `
+    <div class="victory-message" style="padding: 30px; text-align: center;">
+        <h2 style="color: #0066cc; margin-bottom: 15px;">${winTitle}</h2>
+        <p style="color: #1d1d1f; font-size: 1.2rem; margin-bottom: 20px;">
+            ${winMsg}
+        </p>
+        <button class="btn" onclick="location.reload()" 
+            style="background: #0071e3; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+            ${btnText}
+        </button>
+    </div>
+            
        `;
            launchConfetti();
         }
