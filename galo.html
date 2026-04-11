@@ -3,92 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo do Galo | Laboratório de Jogos</title>
+    <title>Jogo do Galo | Helena Nunes</title>
     <style>
-    
-        html, body { height: 100%; margin: 0; padding: 0; }
+        html, body { 
+            height: 100%; margin: 0; display: flex; flex-direction: column; 
+            background-color: #000; color: #fff; overflow: hidden;
+        }
         body { 
-            display: flex; 
-            flex-direction: column; 
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-            text-align: center; 
-            background-color: #ffffff; 
-            color: #1d1d1f; 
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: center;
+            background-image: radial-gradient(circle, #111 1px, transparent 1px);
+            background-size: 30px 30px;
         }
 
-        .game-header { padding: 80px 20px 20px; }
-        .back-link { 
-            color: #0066cc; 
-            text-decoration: none; 
-            font-weight: 600; 
-            font-size: 0.9rem; 
-            display: inline-block;
-            margin-bottom: 15px;
-        }
-        h1 { font-size: 3.2rem; font-weight: 700; margin: 0; letter-spacing: -1.5px; text-transform: uppercase; }
+        .game-header { padding: 40px 20px 10px; z-index: 10; }
+        .back-link { color: #0066cc; text-decoration: none; font-weight: bold; font-size: 0.9rem; }
+        h1 { margin: 15px 0 5px; font-size: 2.5rem; color: #fff; text-shadow: 0 0 10px rgba(0, 113, 227, 0.5); }
 
-        .main-content { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-
-        .control-panel {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
+        .main-content { 
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; 
         }
+
+        .control-panel { display: flex; gap: 15px; margin-bottom: 30px; z-index: 10; }
         .button-group { 
-            background: #f5f5f7; 
-            padding: 6px; 
-            border-radius: 30px; 
-            display: inline-flex; 
-            gap: 5px;
-            border: 1px solid #e5e5e5;
+            background: #050505; padding: 5px; border-radius: 30px; border: 1px solid #222; display: flex;
         }
-
         .mode-btn, .reset-btn { 
-            padding: 10px 22px; 
-            cursor: pointer; 
-            border: none; 
-            background: transparent; 
-            color: #1d1d1f; 
-            border-radius: 25px; 
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-            outline: none;
+            padding: 8px 18px; cursor: pointer; border: none; background: transparent; 
+            color: #86868b; border-radius: 25px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;
         }
-
         .active-blue { 
-            background-color: #0071e3 !important; 
-            color: #ffffff !important; 
-            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3); 
+            background-color: #0071e3 !important; color: #fff !important; 
+            box-shadow: 0 0 15px rgba(0, 113, 227, 0.5); 
         }
 
-        .board { display: grid; grid-template-columns: repeat(3, 110px); grid-gap: 15px; margin-bottom: 30px; }
+        #status { font-size: 1.2rem; font-weight: 500; height: 30px; margin-bottom: 20px; color: #fff; }
+
+        .game-frame {
+            padding: 20px;
+            background: #050505;
+            border-radius: 15px;
+            border: 1px solid #222;
+            box-shadow: 0 0 40px rgba(0, 113, 227, 0.2);
+        }
+
+        .board { 
+            display: grid; grid-template-columns: repeat(3, 100px); grid-template-rows: repeat(3, 100px); 
+            grid-gap: 12px; background-color: #000;
+        }
         .cell { 
-            width: 110px; height: 110px; background: #f5f5f7; border-radius: 22px; 
-            font-size: 3rem; font-weight: 700; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; transition: all 0.2s;
+            width: 100px; height: 100px; background: #111; border: 1px solid #222; border-radius: 12px;
+            font-size: 2.5rem; font-weight: 700; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; transition: all 0.2s; color: #fff;
         }
-        .cell:empty:hover { background: #e8e8ed; transform: scale(1.02); }
-        .cell.x { color: #0071e3; } 
-        .cell.o { color: #ff3b30; }
+        .cell:hover { background: #1a1a1a; border-color: #0071e3; }
+        .cell.x { color: #0071e3; text-shadow: 0 0 10px #0071e3; } 
+        .cell.o { color: #ff3b30; text-shadow: 0 0 10px #ff3b30; }
 
-        #status { font-size: 1.3rem; font-weight: 600; height: 40px; color: #86868b; margin-bottom: 20px; }
-
-    
-        .baseboard { width: 100%; text-align: center; padding: 60px 0; background-color: #f5f5f7; border-top: 1px solid #e5e5e5; }
-        .baseboard p { margin: 8px 0; font-size: 1rem; }
-        .baseboard a { color: #0066cc; text-decoration: none; font-weight: 600; }
+        .baseboard { width: 100%; text-align: center; padding: 40px 0; background-color: #000; border-top: 1px solid #222; margin-top: auto; }
+        .baseboard a { color: #0066cc; text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <div class="game-header">
+    <header class="game-header">
         <a href="index.html" class="back-link" data-pt="← Voltar ao Menu" data-en="← Back to Menu">← Voltar ao Menu</a>
         <h1 data-pt="Jogo do Galo" data-en="Tic-Tac-Toe">Jogo do Galo</h1>
-    </div>
+    </header>
 
     <div class="main-content">
         <div class="control-panel">
@@ -96,7 +76,6 @@
                 <button id="p-vs-p" class="mode-btn active-blue" onclick="setMode('pvp')" data-pt="2 Jogadores" data-en="2 Players">2 Jogadores</button>
                 <button id="p-vs-c" class="mode-btn" onclick="setMode('pvc')" data-pt="Computador" data-en="Computer">Computador</button>
             </div>
-            
             <div class="button-group">
                 <button id="reset-btn" class="reset-btn" onclick="handleReset(this)" data-pt="Reiniciar" data-en="Restart">Reiniciar</button>
             </div>
@@ -104,22 +83,23 @@
 
         <div id="status"></div>
 
-        <div class="board" id="board">
-            <div class="cell" onclick="handleMove(this, 0)"></div>
-            <div class="cell" onclick="handleMove(this, 1)"></div>
-            <div class="cell" onclick="handleMove(this, 2)"></div>
-            <div class="cell" onclick="handleMove(this, 3)"></div>
-            <div class="cell" onclick="handleMove(this, 4)"></div>
-            <div class="cell" onclick="handleMove(this, 5)"></div>
-            <div class="cell" onclick="handleMove(this, 6)"></div>
-            <div class="cell" onclick="handleMove(this, 7)"></div>
-            <div class="cell" onclick="handleMove(this, 8)"></div>
+        <div class="game-frame">
+            <div class="board" id="board">
+                <div class="cell" onclick="handleMove(this, 0)"></div>
+                <div class="cell" onclick="handleMove(this, 1)"></div>
+                <div class="cell" onclick="handleMove(this, 2)"></div>
+                <div class="cell" onclick="handleMove(this, 3)"></div>
+                <div class="cell" onclick="handleMove(this, 4)"></div>
+                <div class="cell" onclick="handleMove(this, 5)"></div>
+                <div class="cell" onclick="handleMove(this, 6)"></div>
+                <div class="cell" onclick="handleMove(this, 7)"></div>
+                <div class="cell" onclick="handleMove(this, 8)"></div>
+            </div>
         </div>
     </div>
 
     <footer class="baseboard">
         <p><strong>Email:</strong> lenanunes10@hotmail.com | <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/helena-viveiros-6a60371b6" target="_blank">helena-nunes</a></p>
-        <p style="color: #86868b;" data-pt="Lisboa, Portugal" data-en="Lisbon, Portugal">Lisboa, Portugal</p>
     </footer>
 
     <script>
@@ -128,24 +108,14 @@
 
         function setMode(m) { 
             gameMode = m; 
-            const pvpBtn = document.getElementById('p-vs-p');
-            const pvcBtn = document.getElementById('p-vs-c');
-
-            if (m === 'pvp') {
-                pvpBtn.classList.add('active-blue');
-                pvcBtn.classList.remove('active-blue');
-            } else {
-                pvcBtn.classList.add('active-blue');
-                pvpBtn.classList.remove('active-blue');
-            }
+            document.getElementById('p-vs-p').classList.toggle('active-blue', m === 'pvp');
+            document.getElementById('p-vs-c').classList.toggle('active-blue', m === 'pvc');
             resetBoard(); 
         }
 
         function handleReset(btn) {
             btn.classList.add('active-blue');
-            setTimeout(() => {
-                btn.classList.remove('active-blue');
-            }, 200); // Button turns blue for 200ms when clicked
+            setTimeout(() => { btn.classList.remove('active-blue'); }, 200);
             resetBoard();
         }
 
@@ -165,17 +135,32 @@
         }
 
         function computerMove() {
-            let move = findBestMove('O'); // Try to win
-            if (move === -1) move = findBestMove('X'); // Try to block
-            if (move === -1 && boardState[4] === "") move = 4; // Take center
+            if (!gameActive) return;
             
+            
+            let move = findBestMove('O'); 
+            
+           
+            if (move === -1) move = findBestMove('X');
+            
+           
+            if (move === -1 && boardState[4] === "") move = 4;
+            
+            
+            if (move === -1) {
+                const corners = [0, 2, 6, 8].filter(i => boardState[i] === "");
+                if (corners.length > 0) move = corners[Math.floor(Math.random() * corners.length)];
+            }
+
+           
             if (move === -1) {
                 let avail = boardState.map((v, i) => v === "" ? i : null).filter(v => v !== null);
                 move = avail[Math.floor(Math.random() * avail.length)];
             }
 
             if (move !== -1) {
-                makeMove(document.querySelectorAll('.cell')[move], move);
+                const cells = document.querySelectorAll('.cell');
+                makeMove(cells[move], move);
             }
         }
 
@@ -184,7 +169,8 @@
                 const [a, b, c] = condition;
                 const values = [boardState[a], boardState[b], boardState[c]];
                 if (values.filter(v => v === symbol).length === 2 && values.filter(v => v === "").length === 1) {
-                    return condition[values.indexOf("")];
+                    const emptyIndex = values.indexOf("");
+                    return condition[emptyIndex];
                 }
             }
             return -1;
@@ -193,52 +179,36 @@
         function checkResult() {
             let win = false;
             for (let condition of wins) {
-                if (boardState[condition[0]] && boardState[condition[0]] === boardState[condition[1]] && boardState[condition[0]] === boardState[condition[2]]) { 
-                    win = true; 
-                    break; 
-                }
+                if (boardState[condition[0]] && boardState[condition[0]] === boardState[condition[1]] && boardState[condition[0]] === boardState[condition[2]]) { win = true; break; }
             }
-            
             const lang = localStorage.getItem('selectedLang') || 'pt';
             const statusEl = document.getElementById('status');
-
+            
             if (win) {
                 statusEl.innerText = (lang==='pt' ? "Vitória do Jogador " : "Player ") + currentPlayer + "!";
                 statusEl.style.color = currentPlayer === 'X' ? "#0071e3" : "#ff3b30";
-                gameActive = false; 
-                return;
+                gameActive = false; return;
             }
-            
             if (!boardState.includes("")) { 
                 statusEl.innerText = lang==='pt'?"Empate!":"It's a Draw!"; 
-                statusEl.style.color = "#86868b";
-                gameActive = false; 
-                return; 
+                gameActive = false; return; 
             }
-
+            
             currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
             statusEl.innerText = (lang==='pt'?"Vez do Jogador ":"Turn: Player ") + currentPlayer;
         }
 
         function resetBoard() {
-            currentPlayer = 'X'; 
-            boardState = ["","","","","","","","",""]; 
-            gameActive = true;
+            currentPlayer = 'X'; boardState = ["","","","","","","","",""]; gameActive = true;
             const lang = localStorage.getItem('selectedLang') || 'pt';
-            const statusEl = document.getElementById('status');
-            statusEl.innerText = lang==='pt'?"Vez do Jogador X":"Turn: Player X";
-            statusEl.style.color = "#86868b";
-            document.querySelectorAll('.cell').forEach(c => { 
-                c.innerText = ""; 
-                c.classList.remove('x','o'); 
-            });
+            document.getElementById('status').innerText = lang==='pt'?"Vez do Jogador X":"Turn: Player X";
+            document.getElementById('status').style.color = "#fff";
+            document.querySelectorAll('.cell').forEach(c => { c.innerText = ""; c.className = 'cell'; });
         }
 
         window.onload = () => {
             const lang = localStorage.getItem('selectedLang') || 'pt';
-            document.querySelectorAll('[data-pt]').forEach(el => {
-                el.innerText = el.getAttribute(`data-${lang}`);
-            });
+            document.querySelectorAll('[data-pt]').forEach(el => { el.innerText = el.getAttribute(`data-${lang}`); });
             resetBoard();
         };
     </script>
